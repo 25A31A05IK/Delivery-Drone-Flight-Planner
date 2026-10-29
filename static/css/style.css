@@ -1,0 +1,290 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #172033;
+}
+
+header {
+    background: #10233f;
+    color: white;
+    padding: 28px 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0 0 10px;
+    font-size: 30px;
+}
+
+header p {
+    color: #cbd5e1;
+    margin: 8px 0;
+}
+
+header span {
+    font-size: 13px;
+    color: #7dd3fc;
+}
+
+main {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.panel {
+    background: white;
+    padding: 22px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.07);
+}
+
+.panel h2 {
+    margin-top: 0;
+    font-size: 20px;
+}
+
+label {
+    display: block;
+    margin: 16px 0 8px;
+    font-weight: bold;
+}
+
+select,
+button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+select {
+    border: 1px solid #cbd5e1;
+    background: white;
+}
+
+button {
+    margin-top: 14px;
+    border: none;
+    background: #0879d9;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0563b0;
+}
+
+#status {
+    color: #475569;
+    font-size: 14px;
+}
+
+#grid {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 5px;
+    margin-top: 18px;
+}
+
+.grid-cell {
+    aspect-ratio: 1;
+    min-width: 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    background: #f8fafc;
+    font-size: 12px;
+    padding: 0;
+    margin: 0;
+    color: #172033;
+    font-weight: 600;
+}
+
+.grid-cell:hover {
+    background: #e0f2fe;
+}
+
+#tour,
+#distance {
+    overflow-wrap: anywhere;
+    line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+    main {
+        grid-template-columns: 1fr;
+        margin-top: 18px;
+        padding: 0 12px;
+    }
+
+    header h1 {
+        font-size: 24px;
+    }
+}
+
+
+/* Grid legend */
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 16px 0;
+    padding: 12px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.legend span {
+    font-size: 14px;
+    color: #334155;
+    padding: 6px 10px;
+    background: #ffffff;
+    border-radius: 6px;
+}
+
+
+/* Live statistics panel */
+.stats-panel {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.stat-card {
+    padding: 16px 10px;
+    text-align: center;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.stat-card h3 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: #475569;
+}
+
+.stat-card p {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+@media (max-width: 480px) {
+    .stats-panel {
+        gap: 6px;
+    }
+
+    .stat-card {
+        padding: 12px 4px;
+    }
+
+    .stat-card h3 {
+        font-size: 12px;
+    }
+}
+
+
+/* Route summary */
+.route-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 16px 0;
+}
+
+.summary-card {
+    padding: 14px 8px;
+    text-align: center;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+}
+
+.summary-card h3 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: #475569;
+}
+
+.summary-card p {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1d4ed8;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+    .route-summary {
+        gap: 6px;
+    }
+
+    .summary-card {
+        padding: 10px 4px;
+    }
+
+    .summary-card h3 {
+        font-size: 11px;
+    }
+
+    .summary-card p {
+        font-size: 17px;
+    }
+}
+
+
+/* Drone simulation controls */
+.drone-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.drone-controls button {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    background: #1d4ed8;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.drone-controls button:hover:not(:disabled) {
+    background: #1e40af;
+}
+
+.drone-controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#simulation-status {
+    margin-top: 10px;
+    color: #475569;
+    font-size: 14px;
+}
+
+
+.grid-cell.drone-current {
+    background: #facc15 !important;
+    color: #172033 !important;
+    border: 3px solid #ca8a04;
+    transform: scale(1.06);
+    z-index: 1;
+}

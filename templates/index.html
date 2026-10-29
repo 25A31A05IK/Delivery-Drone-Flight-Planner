@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Delivery Drone Flight Planner</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .energy-panel {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+        }
+
+        .energy-note {
+            color: #64748b;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .battery-status {
+            padding: 0.75rem;
+            border-radius: 8px;
+            background: #f1f5f9;
+        }
+
+        .battery-ok {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .battery-warning {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .energy-model {
+            margin-top: 1rem;
+            padding: 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            background: #f8fafc;
+            color: #172033;
+            line-height: 1.6;
+        }
+
+        .energy-model h4 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .energy-model ul {
+            padding-left: 1.5rem;
+        }
+
+        .energy-model .energy-note {
+            font-size: 0.9rem;
+            color: #475569;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Delivery Drone Flight Planner</h1>
+        <p>Smart route planning using ADS algorithms</p>
+        <span>SDG 9 · Industry, Innovation and Infrastructure</span>
+    </header>
+
+    <main>
+        <!-- Route planning controls -->
+        <section class="panel">
+            <h2>Plan Your Delivery</h2>
+
+            <label for="algorithm">Select algorithm:</label>
+            <select id="algorithm">
+                <option value="held_karp">Held–Karp (Optimal)</option>
+                <option value="greedy">Greedy (Fast)</option>
+            </select>
+
+            <p>Select a mode, then click cells in the grid.</p>
+
+            <label for="mode">Grid editing mode:</label>
+            <select id="mode">
+                <option value="depot">Set Depot</option>
+                <option value="delivery">Add Delivery Point</option>
+                <option value="blocked">Toggle No-Fly Zone</option>
+                <option value="erase">Erase Cell</option>
+            </select>
+
+            <p id="selection-info">
+                Depot: not set | Deliveries: 0
+            </p>
+
+            <button id="plan-button" type="button">
+                Plan Route
+            </button>
+
+            <button id="reset-button" type="button">
+                Reset Grid
+            </button>
+
+            <p id="status" role="status">
+                Ready to plan your route.
+            </p>
+        </section>
+
+        <!-- Delivery grid -->
+        <section class="panel">
+            <h2>Delivery Grid</h2>
+
+            <div class="stats-panel">
+                <div class="stat-card">
+                    <h3>Grid Size</h3>
+                    <p id="grid-size">8 × 8</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Deliveries</h3>
+                    <p id="delivery-count">0</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>No-Fly Zones</h3>
+                    <p id="blocked-count">0</p>
+                </div>
+            </div>
+
+            <div class="legend">
+                <span>🟢 D — Depot</span>
+                <span>🔵 P — Delivery point</span>
+                <span>🔴 X — No-fly zone</span>
+                <span>🔷 Route — Planned path</span>
+            </div>
+
+            <div id="grid" aria-label="Drone planning grid"></div>
+
+            <!-- Drone simulation controls -->
+            <div class="drone-controls">
+                <button id="start-animation" type="button" disabled>
+                    ▶ Start Simulation
+                </button>
+
+                <button id="pause-animation" type="button" disabled>
+                    ⏸ Pause
+                </button>
+
+                <button id="replay-animation" type="button" disabled>
+                    ↻ Replay
+                </button>
+            </div>
+
+            <p id="simulation-status" role="status">
+                Simulation ready. Plan a route to begin.
+            </p>
+        </section>
+
+        <!-- Route results -->
+        <section class="panel">
+            <h2>Route Results</h2>
+
+            <div class="route-summary">
+                <div class="summary-card">
+                    <h3>Planned Deliveries</h3>
+                    <p id="summary-deliveries">—</p>
+                </div>
+
+                <div class="summary-card">
+                    <h3>Total Distance</h3>
+                    <p id="summary-distance">—</p>
+                </div>
+
+                <div class="summary-card">
+                    <h3>Route Segments</h3>
+                    <p id="summary-segments">—</p>
+                </div>
+            </div>
+
+            <p id="algorithm-used">Algorithm used: —</p>
+            <p id="tour">Delivery order: —</p>
+            <p id="distance">Total distance: —</p>
+            <p id="comparison"></p>
+
+            <!-- Energy and battery estimation -->
+            <section class="energy-panel"
+                     aria-labelledby="energy-heading">
+
+                <h3 id="energy-heading">
+                    Energy &amp; Battery Estimate
+                </h3>
+
+                <p class="energy-note">
+                    Energy consumption is estimated using the
+                    simulation constants listed below. The estimate
+                    includes the planned route back to the depot.
+                </p>
+
+                <div class="route-summary energy-summary">
+                    <div class="summary-card">
+                        <h4>Estimated Energy</h4>
+                        <p id="energy-consumed">—</p>
+                    </div>
+
+                    <div class="summary-card">
+                        <h4>Battery Used</h4>
+                        <p id="battery-used">—</p>
+                    </div>
+
+                    <div class="summary-card">
+                        <h4>Battery Remaining</h4>
+                        <p id="battery-remaining">—</p>
+                    </div>
+                </div>
+
+                <p id="battery-status"
+                   class="battery-status"
+                   role="status">
+                    Plan a route to estimate energy and battery feasibility.
+                </p>
+
+                <!-- Energy model assumptions -->
+                <div class="energy-model">
+                    <h4>Energy Model &amp; Assumptions</h4>
+
+                    <p>
+                        This project uses a simplified mathematical
+                        model to estimate energy consumption during
+                        drone route planning.
+                    </p>
+
+                    <ul>
+                        <li>
+                            <strong>Energy per grid move:</strong>
+                            0.8 Wh/move
+                        </li>
+                        <li>
+                            <strong>Assumed battery capacity:</strong>
+                            100 Wh
+                        </li>
+                        <li>
+                            <strong>Battery reserve:</strong>
+                            20%
+                        </li>
+                        <li>
+                            <strong>Usable battery energy:</strong>
+                            80 Wh
+                        </li>
+                    </ul>
+
+                    <h4>Calculation Formulas</h4>
+
+                    <p>
+                        <strong>Estimated Energy (Wh)</strong>
+                        = Total Route Distance × 0.8
+                    </p>
+
+                    <p>
+                        <strong>Battery Used (%)</strong>
+                        = (Estimated Energy ÷ 100) × 100
+                    </p>
+
+                    <p>
+                        <strong>Battery Remaining (%)</strong>
+                        = 100 − Battery Used (%)
+                    </p>
+
+                    <p>
+                        <strong>Energy Feasibility:</strong>
+                        The route is considered feasible under this
+                        model when estimated energy consumption is
+                        less than or equal to 80 Wh.
+                    </p>
+
+                    <p class="energy-note">
+                        <strong>Important limitation:</strong>
+                        These values are simulation assumptions for
+                        an academic project, not measured specifications
+                        of a real drone. Actual energy consumption can
+                        vary with payload weight, flight speed, wind,
+                        hovering time, battery condition, and other
+                        operating conditions.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Individual route details -->
+            <h3>Route Details</h3>
+
+            <div id="route-details">
+                <p>Plan a route to see the details.</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
